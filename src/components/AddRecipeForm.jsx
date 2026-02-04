@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import classes from "./AddRecipeForm.module.css";
 import Error from "./Error";
 import Button from "./UI/Button";
@@ -9,42 +9,45 @@ import useRecipes from "../Hooks/use_recipes";
 
 const AddRecipeForm = (props) => {
   const recipeCtx = useContext(RecipeContext);
+  const formRef = useRef();
 
   const {
     itemData,
     recipeNameChangeHandler,
-    adddIngredientsList,
-    adddInstructionsList,
-    resetIngredientsList,
-    resetInstructionsList,
+    ingredientsListChange,
+    instructionsListChange,
     changeImg,
     submitHandler,
-    errorInput,
     errorInfo,
     resetError,
     resetAll: resetForm,
   } = useRecipes(props.itemInfo);
 
+  const [ingredientsList, setIngredientsList] = useState(itemData.ingredients);
+  const [instructionsList, setInstructionsList] = useState(
+    itemData.instructions,
+  );
 
   const updateItem = (item) => {
     recipeCtx.updateItem(item);
   };
 
   const addItem = (item) => {
-    let form = document.getElementById("recipe-form");
-    form.reset();
+    formRef.current.reset();
     resetForm();
-    //find a way to reset inputLists
-    
+    setIngredientsList([]);
+    setInstructionsList([]);
+    //check how to delete the lists after reset
+
     recipeCtx.addItem(item);
   };
 
   const onSubmit = (event) => {
     let item = submitHandler(event);
     if (item) {
-      if (item.isInEdettingMood) {
+      if (item.isInEditingMood) {
         updateItem(item);
-      } else if (!item.isInEdettingMood) {
+      } else {
         addItem(item);
       }
     }
@@ -52,7 +55,7 @@ const AddRecipeForm = (props) => {
 
   return (
     <div>
-      {errorInput && (
+      {errorInfo && (
         <Error
           onSubmitError={resetError}
           title={errorInfo.title}
@@ -61,7 +64,7 @@ const AddRecipeForm = (props) => {
       )}
 
       <Card className={classes.input}>
-        <form onSubmit={onSubmit} id="recipe-form">
+        <form onSubmit={onSubmit} ref={formRef}>
           <h1>recipe name</h1>
           <input
             type="text"
@@ -70,23 +73,22 @@ const AddRecipeForm = (props) => {
           ></input>
 
           <UsersInputsLists
-            title={"ingredients"}
-            onChangeInputList={adddIngredientsList}
-            onDeleteList={resetIngredientsList}
-            currentList={itemData.ingredients}
-          ></UsersInputsLists>
-
+            title="ingredients"
+            listChange={ingredientsListChange}
+            currentList={ingredientsList}
+          />
+          {/* check why the sapces are diffrent */}
           <UsersInputsLists
-            title={"instructions"}
-            onChangeInputList={adddInstructionsList}
-            onDeleteList={resetInstructionsList}
-            currentList={itemData.instructions}
-          ></UsersInputsLists>
+            title="instructions"
+            listChange={instructionsListChange}
+            currentList={instructionsList}
+          />
 
           <input
             type="file"
             onChange={changeImg}
-            accept="image/png, image/jpeg"
+            placeholder="please enter an image"
+            accept="image/*"
           ></input>
 
           <Button type={"submit"}>add recipe</Button>

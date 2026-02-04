@@ -1,68 +1,67 @@
 import { useReducer, useEffect } from "react";
 import RecipeContext from "./recipe-cortext";
 
-
 const recpiesReducer = (state, action) => {
-  if (action.type === "ADD") {
-    let updatedItems = state.items.concat(action.item);
-    return {
-      items: updatedItems,
-    };
-  } else if (action.type === "REMOVE") {
-    let updatedItems = state.items.filter((x) => {
-      return x.id !== action.id;
-    });
-    return {
-      items: updatedItems,
-    };
-  } else if (action.type === "EDIT") {
-    let updatedItems = state.items;
-    for (let i = 0; i < updatedItems.length; i++) {
-      if (updatedItems[i].id === action.id) {
-        updatedItems[i].isInEdettingMood = true;
+  let updatedItems;
+  switch (action.type) {
+    case "ADD":
+      updatedItems = state.items.concat(action.item);
+      return {
+        items: updatedItems,
+      };
+    case "REMOVE":
+      updatedItems = state.items.filter((x) => {
+        return x.id !== action.id;
+      });
+      return {
+        items: updatedItems,
+      };
+    case "EDIT":
+      updatedItems = state.items;
+      updatedItems.forEach(item => {
+        if (item.id === action.id){
+           item.isInEditingMood = true;
+        }
+      });
+      return {
+        items: updatedItems,
+      };
+    case "UPDATE":
+      updatedItems = state.items;
+      for (let i = 0; i < updatedItems.length; i++) {
+        if (updatedItems[i].id === action.item.id) {
+          updatedItems[i] = action.item;
+          updatedItems[i].isInEditingMood = false;
+        }
       }
-    }
-    return {
-      items: updatedItems,
-    };
+      return {
+        items: updatedItems,
+      };
+    default:
+      return state;
   }
-  else if (action.type === "UPDATE") {
-    let updatedItems = state.items;
-    for (let i = 0; i < updatedItems.length; i++) {
-      if (updatedItems[i].id === action.item.id) {
-        updatedItems[i] = action.item;
-        updatedItems[i].isInEdettingMood = false;
-      }
-    }
-    return {
-      items: updatedItems,
-    };
-  }
-  return null;
 };
 
 const RecipeProvider = (props) => {
-
-const initialState = {
+  // is there a point to change it back to usestate?
+  const initialState = {
     items:
       localStorage.getItem("recpies") === null
         ? []
-        : JSON.parse(localStorage.getItem("recpies"))
+        : JSON.parse(localStorage.getItem("recpies")),
   };
 
   const [recipesState, dispatchRecipesState] = useReducer(
     recpiesReducer,
-    initialState
+    initialState,
   );
- 
+
   useEffect(() => {
-    localStorage.setItem('recpies', JSON.stringify(recipesState.items))
-  }, [recipesState])
-
-
+    localStorage.setItem("recpies", JSON.stringify(recipesState.items));
+  }, [recipesState]);
 
   const addRecipeHandler = (item) => {
-    dispatchRecipesState({ type: "ADD", item: item });
+    dispatchRecipesState({ type: "ADD", item });
   };
   const removeRecipeHandler = (id) => {
     dispatchRecipesState({ type: "REMOVE", id: id });
@@ -70,18 +69,18 @@ const initialState = {
 
   const editRecpieHandler = (id) => {
     dispatchRecipesState({ type: "EDIT", id: id });
-  }
+  };
 
   const updateRecpieHandler = (item) => {
     dispatchRecipesState({ type: "UPDATE", item: item });
-  }
+  };
 
   const recipeContext = {
     items: recipesState.items,
     addItem: addRecipeHandler,
     removeItem: removeRecipeHandler,
     editItem: editRecpieHandler,
-    updateItem: updateRecpieHandler
+    updateItem: updateRecpieHandler,
   };
 
   return (

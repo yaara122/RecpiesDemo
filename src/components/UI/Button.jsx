@@ -1,5 +1,3 @@
-import React from "react";
-// import styled from "styled-components";
 
 import classes from "./Button.module.css";
 
@@ -7,7 +5,7 @@ const Button = (props) => {
   return (
     <button
       type={props.type || "button"}
-      className={classes.button}
+      className={`${classes.button} ${props.classes}`}
       onClick={props.onClick}
     >
       {props.children}

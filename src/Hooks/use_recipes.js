@@ -1,13 +1,11 @@
-import { type } from "@testing-library/user-event/dist/type";
-import { useReducer, useEffect, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
 
 const emptyItem = {
   title: "",
-  id: "",
   ingredients: [],
   instructions: [],
   img: "",
-  isInEdettingMood: false,
+  isInEditingMood: false,
   id: Math.random().toString(),
 };
 
@@ -19,20 +17,16 @@ const itemStateReducer = (state, action) => {
         title: action.title,
       };
     }
-    case "INGREDIENTS_LIST_ADD": {
-      const newIngredientsList = state.ingredients;
-      newIngredientsList.push(action.listItem);
+    case "INGREDIENTS_LIST_CHANGE": {
       return {
         ...state,
-        ingredients: newIngredientsList,
+        ingredients: action.ingredients,
       };
     }
-    case "INSTRUCTIONS_LIST_ADD": {
-      let newInstructionsList = state.instructions;
-      newInstructionsList.push(action.listItem);
+    case "INSTRUCTIONS_LIST_CHANGE": {
       return {
         ...state,
-        instructions: newInstructionsList,
+        instructions: action.instructions,
       };
     }
     case "CHANGE_IMG": {
@@ -41,32 +35,20 @@ const itemStateReducer = (state, action) => {
         img: action.img,
       };
     }
-    case "RESET_INSTRUCTIONS_LIST": {
-      return {
-        ...state,
-        instructions: [],
-      };
-    }
-    case "RESET_INGREDIENTS_LIST": {
-      return {
-        ...state,
-        ingredients: [],
-      };
-    }
-    case "RESET_Item": {
+    case "RESET_ITEM": {
       return emptyItem;
     }
+    default:
+      return emptyItem;
   }
 };
 
 const useRecipes = (item) => {
-  const [itemState, dispatchState] = useReducer(itemStateReducer, item);
-
-  const [errorInput, setErrorInput] = useState(false);
-  const [errorInfo, setErrorInfo] = useState({
-    message: "",
-    title: "",
-  });
+  const [itemState, dispatchState] = useReducer(
+    itemStateReducer,
+    item ? item : emptyItem,
+  );
+  const [errorInfo, setErrorInfo] = useState();
 
   const recipeNameChangeHandler = (event) => {
     dispatchState({
@@ -75,89 +57,80 @@ const useRecipes = (item) => {
     });
   };
 
-  const adddIngredientsList = (item) => {
-    dispatchState({
-      type: "INGREDIENTS_LIST_ADD",
-      listItem: item,
-    });
-  };
+  const ingredientsListChange = useCallback(
+    (itemList) => {
+      dispatchState({
+        type: "INGREDIENTS_LIST_CHANGE",
+        ingredients: itemList,
+      });
+    },
+    [dispatchState],
+  );
 
-  const adddInstructionsList = (item) => {
-    dispatchState({
-      type: "INSTRUCTIONS_LIST_ADD",
-      listItem: item,
-    });
-  };
+  const instructionsListChange = useCallback(
+    (itemList) => {
+      dispatchState({
+        type: "INSTRUCTIONS_LIST_CHANGE",
+        instructions: itemList,
+      });
+    },
+    [dispatchState],
+  );
 
   const changeImg = (event) => {
-    if (event.target.files[0].type === "image/jpeg") {
+    if (
+      event.target.files[0] &&
+      event.target.files[0].type.startsWith("image/")
+    ) {
       dispatchState({
         type: "CHANGE_IMG",
         img: URL.createObjectURL(event.target.files[0]),
       });
-    }
-    else {
-      setErrorInput(true);
-      setErrorInfo({
-        message: "please enter an img",
-        title: "wrong input",
+    } else {
+      dispatchState({
+        type: "CHANGE_IMG",
+        img: "",
       });
       return;
     }
   };
 
   const resetError = () => {
-    setErrorInput(false);
-  };
-
-  const resetIngredientsList = () => {
-    dispatchState({
-      type: "RESET_INGREDIENTS_LIST",
-    });
-  };
-
-  const resetInstructionsList = () => {
-    dispatchState({
-      type: "RESET_INSTRUCTIONS_LIST",
-    });
+    setErrorInfo(null);
   };
 
   const resetAll = () => {
-    console.log("in reset form from use")
-    resetIngredientsList()
-    resetInstructionsList()
     dispatchState({
-      type: "RESET_Item",
+      type: "RESET_ITEM",
     });
-    console.log(itemState)
   };
 
   const submitHandler = (event) => {
+    // work on img handeling
     event.preventDefault();
-
     if (
-      itemState.ingredients.length === 0 ||
-      itemState.instructions.length === 0
+      (itemState.ingredients.length === 1 &&
+        itemState.ingredients[0].value === "") ||
+      (itemState.instructions.length === 1 &&
+        itemState.instructions[0].value === "")
     ) {
-      setErrorInput(true);
       setErrorInfo({
         message: "please enter ingredients and instructions",
         title: "missing input",
       });
       return;
-    } else if (itemState.title === "") {
-      setErrorInput(true);
+    }
+    if (itemState.title === "") {
       setErrorInfo({
         message: "please enter a name for the recipe ",
         title: "missing input",
       });
       return;
     }
-    else if (itemState.img === ""){
-        setErrorInput(true);
-        setErrorInfo({
-        message: "please enter an img ",
-        title: "missing input img",
+    if (itemState.img === "") {
+      setErrorInfo({
+        message: "please enter an image ",
+        title: "missing image input",
       });
       return;
     }
@@ -167,16 +140,13 @@ const useRecipes = (item) => {
   return {
     itemData: itemState,
     recipeNameChangeHandler,
-    adddIngredientsList,
-    adddInstructionsList,
-    resetIngredientsList,
-    resetInstructionsList,
+    ingredientsListChange,
+    instructionsListChange,
     changeImg,
     submitHandler,
-    errorInput,
     errorInfo,
     resetError,
-    resetAll
+    resetAll,
   };
 };
 

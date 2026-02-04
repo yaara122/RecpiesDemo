@@ -1,6 +1,3 @@
-import React from "react";
-// import styled from "styled-components";
-
 import classes from  './Card.module.css';
 
 const Card = props => {

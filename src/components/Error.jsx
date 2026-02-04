@@ -6,7 +6,7 @@ const Error = (props) => {
   const submitHandler = () => {
     props.onSubmitError();
   };
-
+  
   return (
     <div className={classes.backdrop}>
       <Card className={classes.modal}>
@@ -21,7 +21,6 @@ const Error = (props) => {
         </footer>
       </Card>
     </div>
-    //new
   );
 };
 

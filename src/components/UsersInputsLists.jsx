@@ -1,53 +1,77 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "./UI/Card";
-import Button from "./UI/Button";
+import ListInputItems from "./ListInputItem";
 import classes from "./AddRecipeForm.module.css";
 
 const UsersInputsLists = (props) => {
-  console.log(props)
-  const [inputItemString, setInputItemString] = useState("");
+  const { listChange, title, currentList } = props;
 
-  const addItemToList = () => {
-    if (inputItemString === "") {
-      return;
-    }
-    props.onChangeInputList({
-      text: inputItemString,
+  const [inputItemsList, setInputItemsList] = useState(currentList.length === 0 ? [{
       id: Math.random().toString(),
-    });
-    setInputItemString("");
+      value: "",
+      isTuched: false
+    }] 
+    : currentList );
+
+  useEffect(() => {
+    listChange(inputItemsList);
+  }, [inputItemsList, listChange]);
+
+  const deleteItem = (id) => {
+    if (! inputItemsList.length < 1) {
+      setInputItemsList((prevInputListItem) => {
+        return prevInputListItem.filter((item) => item.id !== id);
+      });
+    }
   };
 
-  const inputTextChangeHandler = (event) => {
-    setInputItemString(event.target.value);
+  const addItem = () => {
+    setInputItemsList((prevInputListItem) => {
+      let newInputList = [
+        ...prevInputListItem,
+        { id: Math.random().toString(), value: "" },
+      ];
+      return newInputList;
+    });
+  };
+
+  const updateItemValue = (id, value) => {
+    setInputItemsList((prevInputListItem) => {
+      let newInputList = [...prevInputListItem];
+      newInputList.forEach((item) => {
+        if (item.id === id) {
+          item.value = value;
+        }
+      });
+      return newInputList;
+    });
+  };
+
+  const toggleIsTuched = (id, isTuched) => {
+    setInputItemsList((prevInputListItem) => {
+      let newInputList = [...prevInputListItem];
+      newInputList.forEach((item) => {
+        if (item.id === id) {
+          item.isTuched = !isTuched;
+        }
+      });
+      return newInputList;
+    });
   };
 
   return (
     <Card className={classes.input}>
-      <h2>{props.title}</h2>
-
-      <input
-        type="text"
-        value={inputItemString}
-        onChange={inputTextChangeHandler}
-      ></input>
-
-      <Button
-        type="button"
-        onClick={addItemToList}
-      >{`add ${props.title}`}</Button>
-
-      <ul>
-        {props.currentList.map((item) => (
-          <li key={item.id}>
-            <p>{item.text}</p>
-          </li>
-        ))}
-      </ul>
-
-      <Button type="button" onClick={props.onDeleteList}>
-        reset list
-      </Button>
+      <h2>{title}</h2>
+      {inputItemsList.map((item) => (
+        <ListInputItems
+          key={item.id}
+          deleteItem={deleteItem}
+          addItem={addItem}
+          updateItemVal={updateItemValue}
+          toggleIsTuched={toggleIsTuched}
+          item={item}
+        />
+      ))}
     </Card>
   );
 };

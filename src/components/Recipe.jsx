@@ -15,11 +15,9 @@ const Recipe = (props) => {
 
       <label>instructions:</label>
       {props.recipe.instructions.map((instruction) => (
-        <div key={instruction.id}>
-          <p>{instruction.value}</p>
-        </div>
+        <div key={instruction.id}>{instruction.value}</div>
       ))}
-      
+
       <img src={props.recipe.img} alt="recipe" />
       <Button
         onClick={() => {

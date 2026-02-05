@@ -43,7 +43,6 @@ const recpiesReducer = (state, action) => {
 };
 
 const RecipeProvider = (props) => {
-  // is there a point to change it back to usestate?
   const initialState = {
     items:
       localStorage.getItem("recpies") === null

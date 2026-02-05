@@ -1,97 +1,61 @@
-import { useCallback, useReducer, useState } from "react";
-
-const emptyItem = {
-  title: "",
-  ingredients: [],
-  instructions: [],
-  img: "",
-  isInEditingMood: false,
-  id: Math.random().toString(),
-};
-
-const itemStateReducer = (state, action) => {
-  switch (action.type) {
-    case "CHANGE_TITLE": {
-      return {
-        ...state,
-        title: action.title,
-      };
-    }
-    case "INGREDIENTS_LIST_CHANGE": {
-      return {
-        ...state,
-        ingredients: action.ingredients,
-      };
-    }
-    case "INSTRUCTIONS_LIST_CHANGE": {
-      return {
-        ...state,
-        instructions: action.instructions,
-      };
-    }
-    case "CHANGE_IMG": {
-      return {
-        ...state,
-        img: action.img,
-      };
-    }
-    case "RESET_ITEM": {
-      return emptyItem;
-    }
-    default:
-      return emptyItem;
-  }
-};
+import { useCallback, useState } from "react";
 
 const useRecipes = (item) => {
-  const [itemState, dispatchState] = useReducer(
-    itemStateReducer,
-    item ? item : emptyItem,
-  );
+  
+  const emptyItem = {
+    title: "",
+    ingredients: [],
+    instructions: [],
+    img: "",
+    isInEditingMood: false,
+    id: Math.random().toString(),
+  };
+
+  const [itemState, setItemsState] = useState(item ? item : emptyItem);
   const [errorInfo, setErrorInfo] = useState();
 
+
   const recipeNameChangeHandler = (event) => {
-    dispatchState({
-      type: "CHANGE_TITLE",
-      title: event.target.value,
+
+    setItemsState((previtem) => {
+      const newItem = previtem;
+      newItem.title = event.target.value;
+      return newItem;
     });
   };
 
-  const ingredientsListChange = useCallback(
-    (itemList) => {
-      dispatchState({
-        type: "INGREDIENTS_LIST_CHANGE",
-        ingredients: itemList,
-      });
-    },
-    [dispatchState],
-  );
+  const ingredientsListChange = useCallback((itemList) => {
+    setItemsState((previtem) => {
+      const newItem = previtem;
+      newItem.ingredients = itemList;
+      return newItem;
+    });
+  }, []);
 
-  const instructionsListChange = useCallback(
-    (itemList) => {
-      dispatchState({
-        type: "INSTRUCTIONS_LIST_CHANGE",
-        instructions: itemList,
-      });
-    },
-    [dispatchState],
-  );
+  const instructionsListChange = useCallback((itemList) => {
+    setItemsState((previtem) => {
+      const newItem = previtem;
+      newItem.instructions = itemList;
+      return newItem;
+    });
+  }, []);
 
   const changeImg = (event) => {
     if (
       event.target.files[0] &&
       event.target.files[0].type.startsWith("image/")
     ) {
-      dispatchState({
-        type: "CHANGE_IMG",
-        img: URL.createObjectURL(event.target.files[0]),
+      setItemsState((previtem) => {
+        const newItem = previtem;
+        newItem.img = URL.createObjectURL(event.target.files[0]);
+        return newItem;
       });
     } else {
-      dispatchState({
-        type: "CHANGE_IMG",
-        img: "",
+      setItemsState((previtem) => {
+        const newItem = previtem;
+        newItem.img = "";
+        return newItem;
       });
-      return;
     }
   };
 
@@ -100,13 +64,10 @@ const useRecipes = (item) => {
   };
 
   const resetAll = () => {
-    dispatchState({
-      type: "RESET_ITEM",
-    });
+    setItemsState(emptyItem);
   };
 
   const submitHandler = (event) => {
-    // work on img handeling
     event.preventDefault();
     if (
       (itemState.ingredients.length === 1 &&

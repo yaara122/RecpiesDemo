@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import classes from "./AddRecipeForm.module.css";
 import Error from "./Error";
 import Button from "./UI/Button";
@@ -10,6 +10,8 @@ import useRecipes from "../Hooks/use_recipes";
 const AddRecipeForm = (props) => {
   const recipeCtx = useContext(RecipeContext);
   const formRef = useRef();
+  const childIngredientsRef = useRef();
+  const childInstructionsRef = useRef();
 
   const {
     itemData,
@@ -23,22 +25,15 @@ const AddRecipeForm = (props) => {
     resetAll: resetForm,
   } = useRecipes(props.itemInfo);
 
-  const [ingredientsList, setIngredientsList] = useState(itemData.ingredients);
-  const [instructionsList, setInstructionsList] = useState(
-    itemData.instructions,
-  );
-
   const updateItem = (item) => {
     recipeCtx.updateItem(item);
   };
 
   const addItem = (item) => {
-    formRef.current.reset();
     resetForm();
-    setIngredientsList([]);
-    setInstructionsList([]);
-    //check how to delete the lists after reset
-
+    formRef.current.reset();
+    childIngredientsRef.current.resetInputList();
+    childInstructionsRef.current.resetInputList();
     recipeCtx.addItem(item);
   };
 
@@ -69,19 +64,20 @@ const AddRecipeForm = (props) => {
           <input
             type="text"
             onChange={recipeNameChangeHandler}
-            value={itemData.title}
+            defaultValue={itemData.title}
           ></input>
 
           <UsersInputsLists
             title="ingredients"
             listChange={ingredientsListChange}
-            currentList={ingredientsList}
+            currentList={itemData.ingredients}
+            ref={childIngredientsRef}
           />
-          {/* check why the sapces are diffrent */}
           <UsersInputsLists
             title="instructions"
             listChange={instructionsListChange}
-            currentList={instructionsList}
+            currentList={itemData.instructions}
+            ref={childInstructionsRef}
           />
 
           <input

@@ -1,24 +1,29 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import Card from "./UI/Card";
 import ListInputItems from "./ListInputItem";
 import classes from "./AddRecipeForm.module.css";
 
-const UsersInputsLists = (props) => {
-  const { listChange, title, currentList } = props;
+const UsersInputsLists = forwardRef((props,ref) => {
 
-  const [inputItemsList, setInputItemsList] = useState(currentList.length === 0 ? [{
+  const DEFAULT_INPUT_ITEMS_LIST = [
+    {
       id: Math.random().toString(),
       value: "",
-      isTuched: false
-    }] 
-    : currentList );
+      isTuched: false,
+    },
+  ];
+
+  const { listChange, title, currentList } = props;
+  const [inputItemsList, setInputItemsList] = useState(
+    currentList.length === 0 ? DEFAULT_INPUT_ITEMS_LIST : currentList,
+  );
 
   useEffect(() => {
     listChange(inputItemsList);
   }, [inputItemsList, listChange]);
 
   const deleteItem = (id) => {
-    if (! inputItemsList.length < 1) {
+    if (!inputItemsList.length < 1) {
       setInputItemsList((prevInputListItem) => {
         return prevInputListItem.filter((item) => item.id !== id);
       });
@@ -59,6 +64,12 @@ const UsersInputsLists = (props) => {
     });
   };
 
+  const resetInputList = () => {
+    setInputItemsList(DEFAULT_INPUT_ITEMS_LIST);
+  };
+
+  useImperativeHandle(ref, () => ({resetInputList}))
+
   return (
     <Card className={classes.input}>
       <h2>{title}</h2>
@@ -74,6 +85,6 @@ const UsersInputsLists = (props) => {
       ))}
     </Card>
   );
-};
+});
 
 export default UsersInputsLists;

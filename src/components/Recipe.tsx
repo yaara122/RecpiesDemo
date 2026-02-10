@@ -1,8 +1,10 @@
-import { useContext } from "react";
-import RecipeContext from "../store/recipe-cortext";
+import React, { useContext } from "react";
+// import RecipeContext from "../store/recipe-cortext";
+import {RecipeContext} from '../store/RecipeProvider'
+import recipeItem from "../models/recipe";
 import Button from "./UI/Button";
 
-const Recipe = (props) => {
+const Recipe: React.FC<{ recipe: recipeItem }> = (props) => {
   const recipeCtx = useContext(RecipeContext);
   return (
     <li key={props.recipe.id}>

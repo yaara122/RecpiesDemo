@@ -1,8 +1,17 @@
 import { useRef } from "react";
+import inputListItem from "../models/inputListItem";
 
-const ListInputItems = (props) => {
+const ListInputItems: React.FC<{
+  item: inputListItem;
+  deleteItem: (id: string) => void;
+  addItem: () => void;
+  updateItemVal: (id: string, value:string ) => void;
+  toggleIsTuched: (id: string, isTuched: boolean) => void;
+}> = (props) => {
+
+// make user that the default value works
   const { item, deleteItem, addItem, updateItemVal } = props;
-  const currentInput = useRef(item.value);
+  const currentInput = useRef<HTMLInputElement>(null);
 
   const inputTextChangeHandler = () => {
     if (!item.isTuched) {
@@ -22,6 +31,7 @@ const ListInputItems = (props) => {
       onChange={inputTextChangeHandler}
       ref={currentInput}
       value={item.value}
+      defaultValue={item.value}
     ></input>
   );
 };

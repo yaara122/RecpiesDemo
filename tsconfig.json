@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,           // Allows coexistence of JS and TS files
+    "jsx": "react-jsx",        // Configures how JSX is handled
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": false,           // Start with loose type checking
+    "noEmit": true,            // Prevents TypeScript from outputting files itself (let your bundler handle it)
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src"]
+}

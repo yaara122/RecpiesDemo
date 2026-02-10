@@ -1,8 +1,22 @@
-import { useReducer, useEffect } from "react";
-import RecipeContext from "./recipe-cortext";
+import React, { useReducer, useEffect } from "react";
+import recipeItem from "../models/recipe";
+
+export const RecipeContext = React.createContext<{
+  items: recipeItem[];
+  addItem: (item: recipeItem) => void;
+  removeItem: (id: string) => void;
+  editItem: (id: string) => void;
+  updateItem: (item: recipeItem) => void;
+}>({
+  items: [],
+  addItem: (item: recipeItem) => {},
+  removeItem: (id: string) => {},
+  editItem: (id: string) => {},
+  updateItem: (item: recipeItem) => {},
+});
 
 const recpiesReducer = (state, action) => {
-  let updatedItems;
+  let updatedItems: recipeItem[];
   switch (action.type) {
     case "ADD":
       updatedItems = state.items.concat(action.item);
@@ -10,7 +24,7 @@ const recpiesReducer = (state, action) => {
         items: updatedItems,
       };
     case "REMOVE":
-      updatedItems = state.items.filter((x) => {
+      updatedItems = state.items.filter((x: recipeItem) => {
         return x.id !== action.id;
       });
       return {
@@ -18,9 +32,9 @@ const recpiesReducer = (state, action) => {
       };
     case "EDIT":
       updatedItems = state.items;
-      updatedItems.forEach(item => {
-        if (item.id === action.id){
-           item.isInEditingMood = true;
+      updatedItems.forEach((item) => {
+        if (item.id === action.id) {
+          item.isInEditingMood = true;
         }
       });
       return {
@@ -42,8 +56,8 @@ const recpiesReducer = (state, action) => {
   }
 };
 
-const RecipeProvider = (props) => {
-  const initialState = {
+const RecipeProvider: React.FC<{ children: React.ReactNode }> = (props) => {
+  const initialState: { items: recipeItem[] } = {
     items:
       localStorage.getItem("recpies") === null
         ? []
@@ -59,18 +73,18 @@ const RecipeProvider = (props) => {
     localStorage.setItem("recpies", JSON.stringify(recipesState.items));
   }, [recipesState]);
 
-  const addRecipeHandler = (item) => {
+  const addRecipeHandler = (item: recipeItem) => {
     dispatchRecipesState({ type: "ADD", item });
   };
-  const removeRecipeHandler = (id) => {
+  const removeRecipeHandler = (id: string) => {
     dispatchRecipesState({ type: "REMOVE", id: id });
   };
 
-  const editRecpieHandler = (id) => {
+  const editRecpieHandler = (id: string) => {
     dispatchRecipesState({ type: "EDIT", id: id });
   };
 
-  const updateRecpieHandler = (item) => {
+  const updateRecpieHandler = (item: recipeItem) => {
     dispatchRecipesState({ type: "UPDATE", item: item });
   };
 

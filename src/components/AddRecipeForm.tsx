@@ -3,15 +3,18 @@ import classes from "./AddRecipeForm.module.css";
 import Error from "./Error";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
-import RecipeContext from "../store/recipe-cortext";
+import { RecipeContext } from "../store/RecipeProvider";
 import UsersInputsLists from "./UsersInputsLists";
 import useRecipes from "../Hooks/use_recipes";
 
-const AddRecipeForm = (props) => {
+import recipeItem from "../models/recipe";
+
+const AddRecipeForm: React.FC<{ itemInfo: recipeItem }> = (props) => {
   const recipeCtx = useContext(RecipeContext);
-  const formRef = useRef();
-  const childIngredientsRef = useRef();
-  const childInstructionsRef = useRef();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const childIngredientsRef = useRef<any>(null);
+  const childInstructionsRef = useRef<any>(null);
 
   const {
     itemData,
@@ -25,11 +28,11 @@ const AddRecipeForm = (props) => {
     resetAll: resetForm,
   } = useRecipes(props.itemInfo);
 
-  const updateItem = (item) => {
+  const updateItem = (item: recipeItem) => {
     recipeCtx.updateItem(item);
   };
 
-  const addItem = (item) => {
+  const addItem = (item: recipeItem) => {
     resetForm();
     formRef.current.reset();
     childIngredientsRef.current.resetInputList();
@@ -37,7 +40,7 @@ const AddRecipeForm = (props) => {
     recipeCtx.addItem(item);
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = (event: React.SubmitEvent) => {
     let item = submitHandler(event);
     if (item) {
       if (item.isInEditingMood) {

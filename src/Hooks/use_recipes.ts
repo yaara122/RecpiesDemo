@@ -1,22 +1,28 @@
 import { useCallback, useState } from "react";
+import recipeItem from "../models/recipe";
+import inputListItem from "../models/inputListItem";
 
-const useRecipes = (item) => {
-  
-  const emptyItem = {
-    title: "",
-    ingredients: [],
-    instructions: [],
-    img: "",
-    isInEditingMood: false,
-    id: Math.random().toString(),
-  };
+const useRecipes = (item?: recipeItem) => {
+  // const emptyItem = {
+  //   title: "",
+  //   ingredients: [],
+  //   instructions: [],
+  //   img: "",
+  //   // isInEditingMood: false,
+  //   // id: Math.random().toString(),
+  // };
 
-  const [itemState, setItemsState] = useState(item ? item : emptyItem);
-  const [errorInfo, setErrorInfo] = useState();
+  const [itemState, setItemsState] = useState<recipeItem>(
+    item ? item : new recipeItem(),
+  );
+  const [errorInfo, setErrorInfo] = useState<{
+    title: string;
+    message: string;
+  }>();
 
-
-  const recipeNameChangeHandler = (event) => {
-
+  const recipeNameChangeHandler = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setItemsState((previtem) => {
       const newItem = previtem;
       newItem.title = event.target.value;
@@ -24,7 +30,7 @@ const useRecipes = (item) => {
     });
   };
 
-  const ingredientsListChange = useCallback((itemList) => {
+  const ingredientsListChange = useCallback((itemList:inputListItem[] ) => {
     setItemsState((previtem) => {
       const newItem = previtem;
       newItem.ingredients = itemList;
@@ -32,7 +38,7 @@ const useRecipes = (item) => {
     });
   }, []);
 
-  const instructionsListChange = useCallback((itemList) => {
+  const instructionsListChange = useCallback((itemList:inputListItem[]) => {
     setItemsState((previtem) => {
       const newItem = previtem;
       newItem.instructions = itemList;
@@ -64,7 +70,8 @@ const useRecipes = (item) => {
   };
 
   const resetAll = () => {
-    setItemsState(emptyItem);
+    // setItemsState(emptyItem);
+    setItemsState(new recipeItem());
   };
 
   const submitHandler = (event) => {

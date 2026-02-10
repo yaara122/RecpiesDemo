@@ -2,7 +2,7 @@ import classes from "./Error.module.css";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 
-const Error = (props) => {
+const Error: React.FC<{title:string, message:string, onSubmitError: () => void}> = (props) => {
   const submitHandler = () => {
     props.onSubmitError();
   };

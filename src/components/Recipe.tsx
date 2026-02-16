@@ -1,0 +1,41 @@
+import React, { useContext } from "react";
+import RecipeContext from '../store/RecipeProvider'
+import recipeItem from "../models/recipe";
+import Button from "./UI/Button";
+
+const Recipe: React.FC<{ recipe: recipeItem }> = (props) => {
+  const recipeCtx = useContext(RecipeContext);
+  return (
+    <li key={props.recipe.id}>
+      <h2>{props.recipe.title}</h2>
+
+      <label>ingredients:</label>
+      {props.recipe.ingredients.map((ingredient) => (
+        <div key={ingredient.id}>{ingredient.value}</div>
+      ))}
+
+      <label>instructions:</label>
+      {props.recipe.instructions.map((instruction) => (
+        <div key={instruction.id}>{instruction.value}</div>
+      ))}
+
+      <img src={props.recipe.img} alt="recipe" />
+      <Button
+        onClick={() => {
+          recipeCtx.removeItem(props.recipe.id);
+        }}
+      >
+        delete
+      </Button>
+      <Button
+        onClick={() => {
+          recipeCtx.editItem(props.recipe.id);
+        }}
+      >
+        edit
+      </Button>
+    </li>
+  );
+};
+
+export default Recipe;

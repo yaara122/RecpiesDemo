@@ -2,14 +2,14 @@ import classes from "./Error.module.css";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 
-const Error = (props) => {
+const Error: React.FC<{title:string, message:string, onSubmitError: () => void}> = (props) => {
   const submitHandler = () => {
     props.onSubmitError();
   };
-
+  
   return (
     <div className={classes.backdrop}>
-      <Card className={classes.modal}>
+      <Card classNames={classes.modal}>
         <header className={classes.header}>
           <h2>{props.title}</h2>
         </header>
@@ -21,7 +21,6 @@ const Error = (props) => {
         </footer>
       </Card>
     </div>
-    //new
   );
 };
 

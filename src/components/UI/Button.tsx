@@ -1,9 +1,11 @@
 import React from "react";
-// import styled from "styled-components";
-
 import classes from "./Button.module.css";
 
-const Button = (props) => {
+const Button: React.FC<{
+  type?: "button" | "submit" | "reset";
+  onClick?: () => void;
+  children: React.ReactNode;
+}> = (props) => {
   return (
     <button
       type={props.type || "button"}

@@ -3,16 +3,8 @@ import recipeItem from "../models/recipe";
 import inputListItem from "../models/inputListItem";
 
 const useRecipes = (item?: recipeItem) => {
-  // const emptyItem = {
-  //   title: "",
-  //   ingredients: [],
-  //   instructions: [],
-  //   img: "",
-  //   // isInEditingMood: false,
-  //   // id: Math.random().toString(),
-  // };
 
-  const [itemState, setItemsState] = useState<recipeItem>(
+  const [recipe, setRecipe] = useState<recipeItem>(
     item ? item : new recipeItem(),
   );
   const [errorInfo, setErrorInfo] = useState<{
@@ -23,15 +15,14 @@ const useRecipes = (item?: recipeItem) => {
   const recipeNameChangeHandler = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setItemsState((previtem) => {
-      const newItem = previtem;
-      newItem.title = event.target.value;
-      return newItem;
+    setRecipe((previtem) => {
+      previtem.title = event.target.value;
+      return previtem;
     });
   };
 
   const ingredientsListChange = useCallback((itemList:inputListItem[] ) => {
-    setItemsState((previtem) => {
+    setRecipe((previtem) => {
       const newItem = previtem;
       newItem.ingredients = itemList;
       return newItem;
@@ -39,7 +30,7 @@ const useRecipes = (item?: recipeItem) => {
   }, []);
 
   const instructionsListChange = useCallback((itemList:inputListItem[]) => {
-    setItemsState((previtem) => {
+    setRecipe((previtem) => {
       const newItem = previtem;
       newItem.instructions = itemList;
       return newItem;
@@ -51,13 +42,13 @@ const useRecipes = (item?: recipeItem) => {
       event.target.files[0] &&
       event.target.files[0].type.startsWith("image/")
     ) {
-      setItemsState((previtem) => {
+      setRecipe((previtem) => {
         const newItem = previtem;
         newItem.img = URL.createObjectURL(event.target.files[0]);
         return newItem;
       });
     } else {
-      setItemsState((previtem) => {
+      setRecipe((previtem) => {
         const newItem = previtem;
         newItem.img = "";
         return newItem;
@@ -70,17 +61,16 @@ const useRecipes = (item?: recipeItem) => {
   };
 
   const resetAll = () => {
-    // setItemsState(emptyItem);
-    setItemsState(new recipeItem());
+    setRecipe(new recipeItem());
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
     if (
-      (itemState.ingredients.length === 1 &&
-        itemState.ingredients[0].value === "") ||
-      (itemState.instructions.length === 1 &&
-        itemState.instructions[0].value === "")
+      (recipe.ingredients.length === 1 &&
+        recipe.ingredients[0].value.trim() === "") ||
+      (recipe.instructions.length === 1 &&
+        recipe.instructions[0].value.trim() === "")
     ) {
       setErrorInfo({
         message: "please enter ingredients and instructions",
@@ -88,25 +78,25 @@ const useRecipes = (item?: recipeItem) => {
       });
       return;
     }
-    if (itemState.title === "") {
+    if (recipe.title === "") {
       setErrorInfo({
         message: "please enter a name for the recipe ",
         title: "missing input",
       });
       return;
     }
-    if (itemState.img === "") {
+    if (recipe.img === "") {
       setErrorInfo({
         message: "please enter an image ",
         title: "missing image input",
       });
       return;
     }
-    return itemState;
+    return recipe;
   };
 
   return {
-    itemData: itemState,
+    itemData: recipe,
     recipeNameChangeHandler,
     ingredientsListChange,
     instructionsListChange,

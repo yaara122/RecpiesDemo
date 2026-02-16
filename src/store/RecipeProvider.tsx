@@ -1,13 +1,15 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import recipeItem from "../models/recipe";
 
-export const RecipeContext = React.createContext<{
+type recipeContextObject = {
   items: recipeItem[];
   addItem: (item: recipeItem) => void;
   removeItem: (id: string) => void;
   editItem: (id: string) => void;
   updateItem: (item: recipeItem) => void;
-}>({
+};
+
+const RecipeContext = React.createContext<recipeContextObject>({
   items: [],
   addItem: (item: recipeItem) => {},
   removeItem: (id: string) => {},
@@ -15,48 +17,9 @@ export const RecipeContext = React.createContext<{
   updateItem: (item: recipeItem) => {},
 });
 
-const recpiesReducer = (state, action) => {
-  let updatedItems: recipeItem[];
-  switch (action.type) {
-    case "ADD":
-      updatedItems = state.items.concat(action.item);
-      return {
-        items: updatedItems,
-      };
-    case "REMOVE":
-      updatedItems = state.items.filter((x: recipeItem) => {
-        return x.id !== action.id;
-      });
-      return {
-        items: updatedItems,
-      };
-    case "EDIT":
-      updatedItems = state.items;
-      updatedItems.forEach((item) => {
-        if (item.id === action.id) {
-          item.isInEditingMood = true;
-        }
-      });
-      return {
-        items: updatedItems,
-      };
-    case "UPDATE":
-      updatedItems = state.items;
-      for (let i = 0; i < updatedItems.length; i++) {
-        if (updatedItems[i].id === action.item.id) {
-          updatedItems[i] = action.item;
-          updatedItems[i].isInEditingMood = false;
-        }
-      }
-      return {
-        items: updatedItems,
-      };
-    default:
-      return state;
-  }
-};
-
-const RecipeProvider: React.FC<{ children: React.ReactNode }> = (props) => {
+export const RecipeProvider: React.FC<{ children: React.ReactNode }> = (
+  props,
+) => {
   const initialState: { items: recipeItem[] } = {
     items:
       localStorage.getItem("recpies") === null
@@ -64,31 +27,55 @@ const RecipeProvider: React.FC<{ children: React.ReactNode }> = (props) => {
         : JSON.parse(localStorage.getItem("recpies")),
   };
 
-  const [recipesState, dispatchRecipesState] = useReducer(
-    recpiesReducer,
-    initialState,
-  );
+  const [recipesState, setRecipesState] = useState(initialState);
+
+  let updatedItems: recipeItem[];
 
   useEffect(() => {
     localStorage.setItem("recpies", JSON.stringify(recipesState.items));
   }, [recipesState]);
 
   const addRecipeHandler = (item: recipeItem) => {
-    dispatchRecipesState({ type: "ADD", item });
+    setRecipesState((prevRecipe) => {
+      return { ...prevRecipe, items: [...prevRecipe.items, item] };
+    });
   };
+
   const removeRecipeHandler = (id: string) => {
-    dispatchRecipesState({ type: "REMOVE", id: id });
+    setRecipesState((prevRecipe) => {
+      updatedItems = prevRecipe.items.filter((x: recipeItem) => {
+        return x.id !== id;
+      });
+      return { ...prevRecipe, items: updatedItems };
+    });
   };
 
   const editRecpieHandler = (id: string) => {
-    dispatchRecipesState({ type: "EDIT", id: id });
+    setRecipesState((prevRecipe) => {
+      updatedItems = prevRecipe.items;
+      updatedItems.forEach((item) => {
+        if (item.id === id) {
+          item.isInEditingMood = true;
+        }
+      });
+      return { ...prevRecipe, items: updatedItems };
+    });
   };
 
   const updateRecpieHandler = (item: recipeItem) => {
-    dispatchRecipesState({ type: "UPDATE", item: item });
+    setRecipesState((prevRecipe) => {
+      updatedItems = prevRecipe.items;
+      for (let i = 0; i < updatedItems.length; i++) {
+        if (updatedItems[i].id === item.id) {
+          updatedItems[i] = item;
+          updatedItems[i].isInEditingMood = false;
+        }
+      }
+      return { ...prevRecipe, items: updatedItems };
+    });
   };
 
-  const recipeContext = {
+  const recipeContext: recipeContextObject = {
     items: recipesState.items,
     addItem: addRecipeHandler,
     removeItem: removeRecipeHandler,
@@ -103,4 +90,4 @@ const RecipeProvider: React.FC<{ children: React.ReactNode }> = (props) => {
   );
 };
 
-export default RecipeProvider;
+export default RecipeContext;

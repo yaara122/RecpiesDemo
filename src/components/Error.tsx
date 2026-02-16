@@ -9,7 +9,7 @@ const Error: React.FC<{title:string, message:string, onSubmitError: () => void}>
   
   return (
     <div className={classes.backdrop}>
-      <Card className={classes.modal}>
+      <Card classNames={classes.modal}>
         <header className={classes.header}>
           <h2>{props.title}</h2>
         </header>

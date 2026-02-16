@@ -3,8 +3,8 @@ import classes from "./AddRecipeForm.module.css";
 import Error from "./Error";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
-import { RecipeContext } from "../store/RecipeProvider";
-import UsersInputsLists from "./UsersInputsLists";
+import RecipeContext from "../store/RecipeProvider";
+import InputsLists from "./inputsLists";
 import useRecipes from "../Hooks/use_recipes";
 
 import recipeItem from "../models/recipe";
@@ -13,8 +13,8 @@ const AddRecipeForm: React.FC<{ itemInfo: recipeItem }> = (props) => {
   const recipeCtx = useContext(RecipeContext);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const childIngredientsRef = useRef<any>(null);
-  const childInstructionsRef = useRef<any>(null);
+  const inputIngredientsRef = useRef<any>(null);
+  const inputInstructionsRef = useRef<any>(null);
 
   const {
     itemData,
@@ -35,8 +35,8 @@ const AddRecipeForm: React.FC<{ itemInfo: recipeItem }> = (props) => {
   const addItem = (item: recipeItem) => {
     resetForm();
     formRef.current.reset();
-    childIngredientsRef.current.resetInputList();
-    childInstructionsRef.current.resetInputList();
+    inputIngredientsRef.current.resetInputList();
+    inputInstructionsRef.current.resetInputList();
     recipeCtx.addItem(item);
   };
 
@@ -61,7 +61,7 @@ const AddRecipeForm: React.FC<{ itemInfo: recipeItem }> = (props) => {
         />
       )}
 
-      <Card className={classes.input}>
+      <Card classNames={classes.input}>
         <form onSubmit={onSubmit} ref={formRef}>
           <h1>recipe name</h1>
           <input
@@ -69,18 +69,19 @@ const AddRecipeForm: React.FC<{ itemInfo: recipeItem }> = (props) => {
             onChange={recipeNameChangeHandler}
             defaultValue={itemData.title}
           ></input>
+          
 
-          <UsersInputsLists
+          <InputsLists
             title="ingredients"
             listChange={ingredientsListChange}
             currentList={itemData.ingredients}
-            ref={childIngredientsRef}
+            ref={inputIngredientsRef}
           />
-          <UsersInputsLists
+          <InputsLists
             title="instructions"
             listChange={instructionsListChange}
             currentList={itemData.instructions}
-            ref={childInstructionsRef}
+            ref={inputInstructionsRef}
           />
 
           <input

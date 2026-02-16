@@ -1,9 +1,9 @@
 import React from 'react';
 import classes from  './Card.module.css';
 
-const Card: React.FC<{className?:string[], children: React.ReactNode}> = props => {
+const Card: React.FC<{classNames?:string, children: React.ReactNode}> = props => {
   return (
-    <div  className={`${classes.card} ${props.className}`}>
+    <div  className={`${classes.card} ${props.classNames}`}>
       {props.children}
     </div>
   );

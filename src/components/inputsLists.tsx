@@ -4,7 +4,7 @@ import ListInputItems from "./ListInputItem";
 import classes from "./AddRecipeForm.module.css";
 import inputListItem from "../models/inputListItem";
 
-const UsersInputsLists = forwardRef(
+const InputsLists = forwardRef(
   (
     props: {
       listChange: (inputItemsList: inputListItem[]) => void;
@@ -76,7 +76,7 @@ const UsersInputsLists = forwardRef(
     useImperativeHandle(ref, () => ({ resetInputList }));
 
     return (
-      <Card className={classes.input}>
+      <Card classNames={classes.input}>
         <h2>{title}</h2>
         {inputItemsList.map((item) => (
           <ListInputItems
@@ -93,4 +93,4 @@ const UsersInputsLists = forwardRef(
   },
 );
 
-export default UsersInputsLists;
+export default InputsLists;

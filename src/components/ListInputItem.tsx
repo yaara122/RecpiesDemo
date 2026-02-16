@@ -9,7 +9,6 @@ const ListInputItems: React.FC<{
   toggleIsTuched: (id: string, isTuched: boolean) => void;
 }> = (props) => {
 
-// make user that the default value works
   const { item, deleteItem, addItem, updateItemVal } = props;
   const currentInput = useRef<HTMLInputElement>(null);
 

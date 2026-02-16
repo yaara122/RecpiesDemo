@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-// import RecipeContext from "../store/recipe-cortext";
-import {RecipeContext} from '../store/RecipeProvider'
+import RecipeContext from '../store/RecipeProvider'
 import recipeItem from "../models/recipe";
 import Button from "./UI/Button";
 

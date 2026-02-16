@@ -1,4 +1,4 @@
-import RecipeProvider from "./store/RecipeProvider";
+import {RecipeProvider} from "./store/RecipeProvider";
 import AddRecipeForm from "./components/AddRecipeForm";
 import RecipesList from "./components/RecipesList";
 
